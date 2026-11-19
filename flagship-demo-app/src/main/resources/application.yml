@@ -1,0 +1,23 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: flagship-demo-app
+
+flagship:
+  enabled: true
+  server-url: http://localhost:8080
+  api-key: flagship_dev_key_12345
+  startup-timeout-ms: 1500
+  cache-file-path: ./.flagship/demo-snapshot.json
+  sse-enabled: true
+  polling-interval-ms: 5000
+  event-flush-interval-ms: 5000
+  offline-mode: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,flagship,metrics

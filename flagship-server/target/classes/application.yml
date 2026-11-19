@@ -1,0 +1,49 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: flagship-server
+  threads:
+    virtual:
+      enabled: true
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: false
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:flagshipdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+flagship:
+  security:
+    jwt:
+      secret: "FlagShipUltraSecretProductionSecurityKeyWith256BitsOfEntropyMinimumForHMACSHA256"
+      expiration-ms: 86400000 # 24 hours
+  sse:
+    heartbeat-interval-ms: 15000
+  hygiene:
+    stale-days-unused: 30
+    stale-days-fully-rolled-out: 14
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always

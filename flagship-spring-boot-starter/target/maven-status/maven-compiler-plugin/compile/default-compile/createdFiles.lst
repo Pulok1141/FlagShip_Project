@@ -1,0 +1,17 @@
+io\flagship\starter\sync\AsyncEventBatcher$QueuedEvent.class
+io\flagship\starter\config\FlagShipAutoConfiguration.class
+io\flagship\starter\aop\DefaultEvaluationContextProvider.class
+io\flagship\starter\annotation\UserKey.class
+io\flagship\starter\sync\SyncEngine.class
+META-INF\spring-configuration-metadata.json
+io\flagship\starter\client\SnapshotFlagShipClient.class
+io\flagship\starter\annotation\FeatureFlag.class
+io\flagship\starter\sync\AsyncEventBatcher.class
+io\flagship\starter\sync\SnapshotCache.class
+io\flagship\starter\client\FlagShipClient.class
+io\flagship\starter\config\FlagShipProperties.class
+io\flagship\starter\aop\FeatureFlagAspect.class
+io\flagship\starter\endpoint\FlagShipEndpoint.class
+io\flagship\starter\client\MeteredFlagShipClient.class
+io\flagship\starter\aop\EvaluationContextProvider.class
+io\flagship\starter\client\ResilientFlagShipClient.class

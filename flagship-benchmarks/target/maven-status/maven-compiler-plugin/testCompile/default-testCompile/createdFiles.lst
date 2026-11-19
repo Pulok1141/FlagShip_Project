@@ -1,0 +1,4 @@
+io\flagship\benchmarks\OutageResilienceVerificationTest.class
+io\flagship\benchmarks\SsePropagationVerificationTest.class
+io\flagship\benchmarks\MemoryHeapVerificationTest.class
+io\flagship\benchmarks\LargeScaleParityAndStickyTest.class

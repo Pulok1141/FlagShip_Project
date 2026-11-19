@@ -1,0 +1,7 @@
+io\flagship\core\engine\RolloutMonotonicityTest.class
+io\flagship\core\visitor\AstVisitorTest.class
+io\flagship\core\strategy\OperatorStrategyTest.class
+io\flagship\core\strategy\SemVerTest.class
+io\flagship\core\model\SnapshotJsonMapperTest.class
+io\flagship\core\chain\ChainOfResponsibilityTest.class
+io\flagship\core\strategy\MurmurHash3Test.class

@@ -1,0 +1,113 @@
+{
+  "groups": [
+    {
+      "name": "flagship",
+      "type": "io.flagship.starter.config.FlagShipProperties",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
+    },
+    {
+      "name": "management.endpoint.flagship",
+      "type": "io.flagship.starter.endpoint.FlagShipEndpoint",
+      "sourceType": "io.flagship.starter.endpoint.FlagShipEndpoint"
+    }
+  ],
+  "properties": [
+    {
+      "name": "flagship.api-key",
+      "type": "java.lang.String",
+      "description": "Project environment SDK API key (e.g. flagship_dev_key_12345).",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": ""
+    },
+    {
+      "name": "flagship.cache-file-path",
+      "type": "java.lang.String",
+      "description": "Local disk cache file path for atomic snapshot persistence and offline recovery.",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": ".\/.flagship\/snapshot.json"
+    },
+    {
+      "name": "flagship.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Master switch for FlagShip SDK integration.",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "flagship.event-batch-size",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of events to batch before triggering an immediate flush.",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": 100
+    },
+    {
+      "name": "flagship.event-flush-interval-ms",
+      "type": "java.lang.Long",
+      "description": "Asynchronous exposure & goal event batch flush interval in milliseconds.",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": 10000
+    },
+    {
+      "name": "flagship.offline-mode",
+      "type": "java.lang.Boolean",
+      "description": "If true, runs entirely offline using local disk cache without contacting server.",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "flagship.polling-interval-ms",
+      "type": "java.lang.Long",
+      "description": "Polling fallback interval in milliseconds when SSE is unavailable or disconnected. Minimum 5000ms.",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": 30000
+    },
+    {
+      "name": "flagship.server-url",
+      "type": "java.lang.String",
+      "description": "FlagShip Control Plane Server URL (e.g. http:\/\/localhost:8080).",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": "http:\/\/localhost:8080"
+    },
+    {
+      "name": "flagship.sse-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable real-time push synchronization via Server-Sent Events (SSE).",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "flagship.startup-timeout-ms",
+      "type": "java.lang.Long",
+      "description": "Startup bootstrap blocking timeout in milliseconds. Strictly capped at <= 2000 ms.",
+      "sourceType": "io.flagship.starter.config.FlagShipProperties",
+      "defaultValue": 1500
+    },
+    {
+      "name": "management.endpoint.flagship.access",
+      "type": "org.springframework.boot.actuate.endpoint.Access",
+      "description": "Permitted level of access for the flagship endpoint.",
+      "sourceType": "io.flagship.starter.endpoint.FlagShipEndpoint",
+      "defaultValue": "unrestricted"
+    },
+    {
+      "name": "management.endpoint.flagship.cache.time-to-live",
+      "type": "java.time.Duration",
+      "description": "Maximum time that a response can be cached.",
+      "sourceType": "io.flagship.starter.endpoint.FlagShipEndpoint",
+      "defaultValue": "0ms"
+    },
+    {
+      "name": "management.endpoint.flagship.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the flagship endpoint.",
+      "sourceType": "io.flagship.starter.endpoint.FlagShipEndpoint",
+      "defaultValue": true,
+      "deprecated": true,
+      "deprecation": {
+        "replacement": "management.endpoint.flagship.access",
+        "since": "3.4.0"
+      }
+    }
+  ],
+  "hints": []
+}

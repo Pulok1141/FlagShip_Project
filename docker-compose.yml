@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: flagship-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: flagship
+      POSTGRES_USER: flagship
+      POSTGRES_PASSWORD: flagship_secret_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flagship -d flagship"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flagship-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: flagship-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/flagship
+      SPRING_DATASOURCE_USERNAME: flagship
+      SPRING_DATASOURCE_PASSWORD: flagship_secret_password
+      SERVER_PORT: 8080
+      FLAGSHIP_JWT_SECRET: flagship-production-super-secure-jwt-signing-key-32-chars-long!
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

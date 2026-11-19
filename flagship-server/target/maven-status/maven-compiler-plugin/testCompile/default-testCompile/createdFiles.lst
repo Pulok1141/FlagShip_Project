@@ -1,0 +1,5 @@
+io\flagship\server\service\ChangeRequestServiceTest.class
+io\flagship\server\service\FlagHygieneTest.class
+io\flagship\server\service\SseBroadcasterTest.class
+io\flagship\server\service\ExperimentAnalyticsTest.class
+io\flagship\server\ServerIntegrationTest.class
