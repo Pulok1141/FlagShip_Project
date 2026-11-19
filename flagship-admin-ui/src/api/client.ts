@@ -8,8 +8,11 @@ import {
   StaleFlagReport,
   EvaluationResult,
 } from '../types';
+import { mockStore } from './mockStore';
 
-const API_BASE = '/api';
+const getApiBase = (): string => {
+  return ((import.meta as any).env?.VITE_API_BASE_URL as string) || localStorage.getItem('flagship_api_base') || '/api';
+};
 
 class ApiClient {
   private token: string | null = null;
@@ -31,6 +34,18 @@ class ApiClient {
     return this.token;
   }
 
+  setApiBase(url: string) {
+    if (url) {
+      localStorage.setItem('flagship_api_base', url.replace(/\/$/, ''));
+    } else {
+      localStorage.removeItem('flagship_api_base');
+    }
+  }
+
+  getApiBase(): string {
+    return getApiBase();
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -41,38 +56,56 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    const apiBase = getApiBase();
 
-    if (response.status === 401 && !endpoint.includes('/auth/login')) {
-      this.setToken(null);
-      window.location.href = '/login';
-      throw new Error('Session expired. Please log in again.');
-    }
+    try {
+      const response = await fetch(`${apiBase}${endpoint}`, {
+        ...options,
+        headers,
+      });
 
-    if (!response.ok) {
-      let errMessage = `HTTP ${response.status} ${response.statusText}`;
-      try {
-        const errJson = await response.json();
-        if (errJson.message) errMessage = errJson.message;
-        else if (errJson.error) errMessage = errJson.error;
-      } catch (e) {
-        // Fallback to text
-        try {
-          const text = await response.text();
-          if (text) errMessage = text;
-        } catch (_) {}
+      // 404 indicates backend route is absent (e.g. static hosting on Vercel)
+      if (response.status === 404) {
+        return mockStore.handleRequest<T>(endpoint, options);
       }
-      throw new Error(errMessage);
-    }
 
-    if (response.status === 204) {
-      return {} as T;
-    }
+      if (response.status === 401 && !endpoint.includes('/auth/login')) {
+        this.setToken(null);
+        window.location.href = '/login';
+        throw new Error('Session expired. Please log in again.');
+      }
 
-    return response.json();
+      if (!response.ok) {
+        let errMessage = `HTTP ${response.status} ${response.statusText}`;
+        try {
+          const errJson = await response.json();
+          if (errJson.message) errMessage = errJson.message;
+          else if (errJson.error) errMessage = errJson.error;
+        } catch (e) {
+          try {
+            const text = await response.text();
+            if (text) errMessage = text;
+          } catch (_) {}
+        }
+        throw new Error(errMessage);
+      }
+
+      if (response.status === 204) {
+        return {} as T;
+      }
+
+      return response.json();
+    } catch (err: any) {
+      // If network failed (e.g. backend down or CORS on static deployment)
+      if (
+        err.message?.includes('Failed to fetch') ||
+        err.message?.includes('NetworkError') ||
+        err.message?.includes('404')
+      ) {
+        return mockStore.handleRequest<T>(endpoint, options);
+      }
+      throw err;
+    }
   }
 
   // Auth

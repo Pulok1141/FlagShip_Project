@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd flagship-admin-ui && npm run build",
+  "outputDirectory": "flagship-admin-ui/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
