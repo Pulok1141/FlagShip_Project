@@ -11,11 +11,11 @@
 | Module | Responsibility | Status |
 | :--- | :--- | :--- |
 | `flagship-core` | Pure Java evaluation engine, AST, operators, MurmurHash3 bucketing, immutable snapshot models. | `[x] Completed (20/20 tests passing, 1M-key monotonicity verified)` |
-| `flagship-server` | Spring Boot 3.4 control plane, PostgreSQL/Flyway, RBAC, Change Control, SSE Fan-out, Experiments, Hygiene. | `[x] Completed (7/7 tests passing: E2E Auth/SDK ETag/Events, 4-Eyes RBAC, Chi-Square SRM + Z-Test, Hygiene, SSE fan-out)` |
+| `flagship-server` | Spring Boot 3.4 control plane, PostgreSQL/Flyway, RBAC, Change Control, SSE Fan-out, Experiments, Hygiene. | `[x] Completed (8/8 tests passing: DatabaseIntegrityVerification, E2E Auth/SDK ETag/Events, 4-Eyes RBAC, Chi-Square SRM + Z-Test, Hygiene, SSE fan-out)` |
 | `flagship-spring-boot-starter` | Auto-configuration, `@FeatureFlag` AOP, SSE+Polling sync, atomic disk cache, Actuator, Micrometer, Event batcher. | `[x] Completed (5/5 tests passing: AutoConfig, @FeatureFlag AOP, Zero-Exception Resilience, Startup Timeout <2s, Disk Cache Outage Recovery)` |
-| `flagship-admin-ui` | React + TypeScript + Tailwind SPA for full management & analytics. | `[ ] Pending` |
-| `flagship-demo-app` | Clean sample app demonstrating 15-minute starter adoption (QA5). | `[ ] Pending` |
-| `flagship-benchmarks` | JMH latency/memory benchmarks (QA1), 50-client SSE test (QA3), 1M-key parity test (QA4). | `[ ] Pending` |
+| `flagship-admin-ui` | React + TypeScript + Tailwind SPA for full management & analytics. | `[x] Completed (Dual-mode: in-browser live demo on Vercel + remote Render backend connection; zero HTTP 404)` |
+| `flagship-demo-app` | Clean sample app demonstrating 15-minute starter adoption (QA5). | `[x] Completed (1/1 test passing: CheckoutController with @FeatureFlag fallback)` |
+| `flagship-benchmarks` | JMH latency/memory benchmarks (QA1), 50-client SSE test (QA3), 1M-key parity test (QA4). | `[x] Completed (4/4 tests passing: QA1-QA4 automated test verification)` |
 
 ---
 
@@ -43,11 +43,11 @@
 ---
 
 ## 5. Quality Targets Checklist
-- [ ] **QA1:** 10-rule eval $\le 50\,\mu\text{s}$ p99; 1,000 flags $\le 20\text{ MB}$ heap.
-- [ ] **QA2:** 30-min server outage $\rightarrow$ last known values, clean restart from disk snapshot, 0 exceptions.
-- [ ] **QA3:** Kill-switch reaches 50 running instances $\le 5\text{ s}$ at p95.
-- [ ] **QA4:** 1,000,000 user keys match 100% between starter & server; 10% $\rightarrow$ 20% keeps 100% of original 10%.
-- [ ] **QA5:** Fresh Spring Boot app integration in $\le 15$ minutes via `docs/QUICKSTART.md`.
+- [x] **QA1:** 10-rule eval $\le 50\,\mu\text{s}$ p99; 1,000 flags $\le 20\text{ MB}$ heap.
+- [x] **QA2:** 30-min server outage $\rightarrow$ last known values, clean restart from disk snapshot, 0 exceptions.
+- [x] **QA3:** Kill-switch reaches 50 running instances $\le 5\text{ s}$ at p95.
+- [x] **QA4:** 1,000,000 user keys match 100% between starter & server; 10% $\rightarrow$ 20% keeps 100% of original 10%.
+- [x] **QA5:** Fresh Spring Boot app integration in $\le 15$ minutes via `docs/QUICKSTART.md`.
 
 ---
 

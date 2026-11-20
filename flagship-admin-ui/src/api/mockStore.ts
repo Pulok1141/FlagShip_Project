@@ -365,15 +365,110 @@ class MockStore {
       return this.state.projects as T;
     }
 
+    if (endpoint === '/projects' && method === 'POST') {
+      const newProj: Project = {
+        id: `proj-${Date.now()}`,
+        projectKey: body.projectKey,
+        name: body.name,
+        description: body.description,
+        myRole: 'ADMIN',
+        environments: [
+          { id: `env-dev-${Date.now()}`, envKey: 'development', name: 'Development', apiKey: `flagship_dev_${Date.now()}`, requireApproval: false },
+          { id: `env-stage-${Date.now()}`, envKey: 'staging', name: 'Staging', apiKey: `flagship_staging_${Date.now()}`, requireApproval: false },
+          { id: `env-prod-${Date.now()}`, envKey: 'production', name: 'Production', apiKey: `flagship_prod_${Date.now()}`, requireApproval: true },
+        ],
+      };
+      this.state.projects.push(newProj);
+      this.saveState();
+      return newProj as T;
+    }
+
     // 4. Flags list
     if (endpoint.startsWith('/projects/') && endpoint.endsWith('/flags') && method === 'GET') {
-      return this.state.flags as T;
+      const parts = endpoint.split('/');
+      const projId = parts[2];
+      const flags = this.state.flags.filter((f) => f.projectId === projId);
+      return (flags.length > 0 ? flags : this.state.flags) as T;
+    }
+
+    if (endpoint.startsWith('/projects/') && endpoint.endsWith('/flags') && method === 'POST') {
+      const parts = endpoint.split('/');
+      const projId = parts[2];
+      const newFlag: Flag = {
+        id: `flag-${Date.now()}`,
+        projectId: projId,
+        flagKey: body.flagKey,
+        name: body.name,
+        description: body.description,
+        flagType: body.flagType || 'BOOLEAN',
+        ownerEmail: 'admin@flagship.io',
+        tags: body.tags || [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        lastEvaluatedAt: new Date().toISOString(),
+        envConfigs: {
+          development: {
+            id: `cfg-dev-${Date.now()}`,
+            envKey: 'development',
+            environmentName: 'Development',
+            enabled: true,
+            version: 1,
+            defaultVariationId: 'v-true',
+            offVariationId: 'v-false',
+            requireApproval: false,
+            variations: [
+              { id: 'v-true', name: 'Enabled', value: true },
+              { id: 'v-false', name: 'Disabled', value: false },
+            ],
+            targets: [],
+            rules: [],
+            rollout: [],
+          },
+          staging: {
+            id: `cfg-stage-${Date.now()}`,
+            envKey: 'staging',
+            environmentName: 'Staging',
+            enabled: false,
+            version: 1,
+            defaultVariationId: 'v-false',
+            offVariationId: 'v-false',
+            requireApproval: false,
+            variations: [
+              { id: 'v-true', name: 'Enabled', value: true },
+              { id: 'v-false', name: 'Disabled', value: false },
+            ],
+            targets: [],
+            rules: [],
+            rollout: [],
+          },
+          production: {
+            id: `cfg-prod-${Date.now()}`,
+            envKey: 'production',
+            environmentName: 'Production',
+            enabled: false,
+            version: 1,
+            defaultVariationId: 'v-false',
+            offVariationId: 'v-false',
+            requireApproval: true,
+            variations: [
+              { id: 'v-true', name: 'Enabled', value: true },
+              { id: 'v-false', name: 'Disabled', value: false },
+            ],
+            targets: [],
+            rules: [],
+            rollout: [],
+          },
+        },
+      };
+      this.state.flags.push(newFlag);
+      this.saveState();
+      return newFlag as T;
     }
 
     // 5. Flag Detail
-    if (endpoint.startsWith('/flags/flag-') && method === 'GET') {
+    if (endpoint.startsWith('/flags/') && !endpoint.includes('/configs/') && method === 'GET') {
       const flagId = endpoint.replace('/flags/', '');
-      const flag = this.state.flags.find((f) => f.id === flagId) || this.state.flags[0];
+      const flag = this.state.flags.find((f) => f.id === flagId || f.flagKey === flagId) || this.state.flags[0];
       return flag as T;
     }
 
@@ -578,7 +673,27 @@ class MockStore {
       return this.state.segments as T;
     }
 
+    if (endpoint.includes('/segments') && method === 'POST') {
+      const newSeg = {
+        id: `seg-${Date.now()}`,
+        segmentKey: body.segmentKey,
+        name: body.name,
+        description: body.description,
+        ruleTreeJson: body.ruleTreeJson,
+      };
+      this.state.segments.push(newSeg);
+      this.saveState();
+      return newSeg as T;
+    }
+
     return {} as T;
+  }
+
+  public resetState() {
+    try {
+      localStorage.removeItem('flagship_mock_state_v2');
+      this.state = this.loadState();
+    } catch (_) {}
   }
 }
 

@@ -25,7 +25,7 @@ public class Project {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project")
     private List<Environment> environments = new ArrayList<>();
 
     public Project() {}
@@ -36,6 +36,16 @@ public class Project {
         this.name = name;
         this.description = description;
         this.createdAt = Instant.now();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (id == null || id.isBlank()) {
+            id = "proj-" + java.util.UUID.randomUUID();
+        }
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 
     public String getId() { return id; }

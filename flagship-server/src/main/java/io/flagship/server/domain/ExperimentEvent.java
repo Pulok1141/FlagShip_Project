@@ -61,6 +61,19 @@ public class ExperimentEvent {
         this.timestamp = timestamp != null ? timestamp : Instant.now();
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (id == null || id.isBlank()) {
+            id = "evt-" + java.util.UUID.randomUUID();
+        }
+        if (timestamp == null) {
+            timestamp = Instant.now();
+        }
+        if (metricValue == null) {
+            metricValue = 1.0;
+        }
+    }
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

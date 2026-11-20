@@ -51,7 +51,7 @@ public class Flag {
     @Column(name = "fully_rolled_out_since")
     private Instant fullyRolledOutSince;
 
-    @OneToMany(mappedBy = "flag", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "flag")
     private List<FlagEnvConfig> envConfigs = new ArrayList<>();
 
     public Flag() {}
@@ -68,6 +68,19 @@ public class Flag {
         this.tags = tags;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (id == null || id.isBlank()) {
+            id = "flag-" + java.util.UUID.randomUUID();
+        }
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        if (updatedAt == null) {
+            updatedAt = Instant.now();
+        }
     }
 
     public String getId() { return id; }

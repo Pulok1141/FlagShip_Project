@@ -3,7 +3,7 @@
   "outputDirectory": "flagship-admin-ui/dist",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|favicon.ico).*)",
       "destination": "/index.html"
     }
   ]

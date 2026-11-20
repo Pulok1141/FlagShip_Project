@@ -44,6 +44,19 @@ public class Environment {
         this.createdAt = Instant.now();
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (id == null || id.isBlank()) {
+            id = "env-" + java.util.UUID.randomUUID();
+        }
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        if (apiKey == null || apiKey.isBlank()) {
+            apiKey = "flagship_" + java.util.UUID.randomUUID().toString().replace("-", "");
+        }
+    }
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

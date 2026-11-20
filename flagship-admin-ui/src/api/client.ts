@@ -10,8 +10,40 @@ import {
 } from '../types';
 import { mockStore } from './mockStore';
 
+const normalizeApiBase = (url: string): string => {
+  if (!url) return '/api';
+  let clean = url.trim().replace(/\/+$/, '');
+  if (!clean.endsWith('/api') && (clean.startsWith('http://') || clean.startsWith('https://'))) {
+    clean = `${clean}/api`;
+  }
+  return clean;
+};
+
+export const getCustomBackendUrl = (): string | null => {
+  return localStorage.getItem('flagship_api_base');
+};
+
+export const isDemoMode = (): boolean => {
+  const custom = getCustomBackendUrl();
+  const envUrl = (import.meta as any).env?.VITE_API_BASE_URL as string;
+  if (custom || envUrl) return false;
+
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') return false;
+    if (window.location.port === '8080') return false;
+    // On any external static domain (e.g. *.vercel.app, *.netlify.app, *.github.io)
+    return true;
+  }
+  return false;
+};
+
 const getApiBase = (): string => {
-  return ((import.meta as any).env?.VITE_API_BASE_URL as string) || localStorage.getItem('flagship_api_base') || '/api';
+  const custom = localStorage.getItem('flagship_api_base');
+  const envUrl = (import.meta as any).env?.VITE_API_BASE_URL as string;
+  if (custom) return normalizeApiBase(custom);
+  if (envUrl) return normalizeApiBase(envUrl);
+  return '/api';
 };
 
 class ApiClient {
@@ -34,9 +66,9 @@ class ApiClient {
     return this.token;
   }
 
-  setApiBase(url: string) {
-    if (url) {
-      localStorage.setItem('flagship_api_base', url.replace(/\/$/, ''));
+  setApiBase(url: string | null) {
+    if (url && url.trim()) {
+      localStorage.setItem('flagship_api_base', normalizeApiBase(url.trim()));
     } else {
       localStorage.removeItem('flagship_api_base');
     }
@@ -46,7 +78,21 @@ class ApiClient {
     return getApiBase();
   }
 
+  isDemoMode(): boolean {
+    return isDemoMode();
+  }
+
+  resetDemoStore() {
+    mockStore.resetState();
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    // If on a static cloud domain (e.g. Vercel) and no custom backend URL is configured,
+    // immediately serve from the in-browser interactive mock store without failing
+    if (isDemoMode()) {
+      return mockStore.handleRequest<T>(endpoint, options);
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
@@ -64,8 +110,9 @@ class ApiClient {
         headers,
       });
 
-      // 404 indicates backend route is absent (e.g. static hosting on Vercel)
-      if (response.status === 404) {
+      // 404, 405 (Method Not Allowed on static proxy), or 5xx (cold start / server down)
+      if (response.status === 404 || response.status === 405 || response.status >= 500) {
+        console.warn(`Backend returned HTTP ${response.status} for ${endpoint}. Falling back to demo store.`);
         return mockStore.handleRequest<T>(endpoint, options);
       }
 
@@ -84,7 +131,7 @@ class ApiClient {
         } catch (e) {
           try {
             const text = await response.text();
-            if (text) errMessage = text;
+            if (text && !text.includes('<!doctype') && !text.includes('<html')) errMessage = text;
           } catch (_) {}
         }
         throw new Error(errMessage);
@@ -94,17 +141,18 @@ class ApiClient {
         return {} as T;
       }
 
-      return response.json();
-    } catch (err: any) {
-      // If network failed (e.g. backend down or CORS on static deployment)
-      if (
-        err.message?.includes('Failed to fetch') ||
-        err.message?.includes('NetworkError') ||
-        err.message?.includes('404')
-      ) {
+      // If static SPA routing returned index.html instead of JSON
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('text/html')) {
+        console.warn(`Received HTML response for ${endpoint}. Falling back to demo store.`);
         return mockStore.handleRequest<T>(endpoint, options);
       }
-      throw err;
+
+      return await response.json();
+    } catch (err: any) {
+      // If network failed (CORS, offline, unreachable, or HTML SyntaxError)
+      console.warn(`Request failed for ${endpoint}: ${err.message}. Falling back to demo store.`);
+      return mockStore.handleRequest<T>(endpoint, options);
     }
   }
 

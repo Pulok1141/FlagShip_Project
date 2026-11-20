@@ -1,6 +1,35 @@
+# Stage 1: Build stage
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
+WORKDIR /workspace
+
+# Copy parent and module pom.xml files first for efficient caching
+COPY pom.xml .
+COPY flagship-core/pom.xml flagship-core/
+COPY flagship-server/pom.xml flagship-server/
+COPY flagship-spring-boot-starter/pom.xml flagship-spring-boot-starter/
+COPY flagship-benchmarks/pom.xml flagship-benchmarks/
+COPY flagship-demo-app/pom.xml flagship-demo-app/
+
+# Copy sources for required modules
+COPY flagship-core/src flagship-core/src
+COPY flagship-server/src flagship-server/src
+COPY flagship-spring-boot-starter/src flagship-spring-boot-starter/
+
+# Build core and server fat jar (skipping tests for fast Docker image build)
+RUN mvn clean package -DskipTests -pl flagship-core,flagship-server -am
+
+# Stage 2: Runtime image
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY flagship-server/target/classes /app/classes
-COPY flagship-server/target/flagship-server-1.0.0-SNAPSHOT.jar /app/app.jar
+
+# Copy the repackaged executable Spring Boot fat JAR
+COPY --from=build /workspace/flagship-server/target/flagship-server-1.0.0-SNAPSHOT.jar /app/app.jar
+
+# Render injects PORT dynamically; 8080 is the default
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+# Configure memory limits for Render 512 MB free tier
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -Xms128m -Xmx384m"
+
+# Run container with dynamic port and memory constraints
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

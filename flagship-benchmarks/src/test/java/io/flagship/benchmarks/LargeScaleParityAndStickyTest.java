@@ -4,7 +4,6 @@ import io.flagship.core.compiled.CompiledSnapshot;
 import io.flagship.core.engine.DefaultEvaluationEngine;
 import io.flagship.core.engine.EvaluationEngine;
 import io.flagship.core.model.*;
-import io.flagship.core.strategy.MurmurHash3;
 import io.flagship.core.strategy.MurmurHash3BucketingStrategy;
 import io.flagship.starter.client.FlagShipClient;
 import io.flagship.starter.client.SnapshotFlagShipClient;
@@ -33,7 +32,7 @@ class LargeScaleParityAndStickyTest {
 
         for (int i = 0; i < keyCount; i++) {
             String userKey = "customer-uuid-" + i;
-            int bucket = bucketing.getBucket(flagKey, userKey);
+            int bucket = bucketing.calculateBucket(flagKey, userKey);
 
             boolean in10 = bucket < 1000; // 0..999 is 10.00%
             boolean in20 = bucket < 2000; // 0..1999 is 20.00%
@@ -56,13 +55,13 @@ class LargeScaleParityAndStickyTest {
 
         // 2. 100% Parity between Server Engine & Starter Client
         List<Variation> variations = List.of(
-                new Variation("v-control", "Control", "old-flow", "Legacy"),
-                new Variation("v-treatment", "Treatment", "new-flow", "Next-Gen")
+                new Variation("v-control", "Control", "old-flow"),
+                new Variation("v-treatment", "Treatment", "new-flow")
         );
 
-        PercentageRollout rollout = new PercentageRollout(List.of(
-                new RolloutBucket("v-treatment", 30),
-                new RolloutBucket("v-control", 70)
+        PercentageRollout rollout = PercentageRollout.of(List.of(
+                new RolloutBucket("v-treatment", 3000),
+                new RolloutBucket("v-control", 7000)
         ));
 
         FlagDefinition flag = new FlagDefinition(
@@ -104,4 +103,3 @@ class LargeScaleParityAndStickyTest {
                 .isZero();
     }
 }
-

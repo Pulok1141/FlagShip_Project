@@ -1,5 +1,6 @@
 import React from 'react';
-import { Flag, GitPullRequest, BarChart3, ShieldAlert, Layers, LogOut, CheckCircle2 } from 'lucide-react';
+import { Flag, GitPullRequest, BarChart3, ShieldAlert, Layers, LogOut, CheckCircle2, Sparkles, Globe } from 'lucide-react';
+import { isDemoMode, api } from '../api/client';
 import { Project, User } from '../types';
 
 interface NavbarProps {
@@ -162,6 +163,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User profile & Logout */}
           <div className="flex items-center space-x-4">
+            {isDemoMode() ? (
+              <span className="hidden md:inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm" title="Running in self-contained interactive demo mode">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>Live Demo</span>
+              </span>
+            ) : (
+              <span className="hidden md:inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm" title={`Connected to ${api.getApiBase()}`}>
+                <Globe className="w-3 h-3 text-emerald-400" />
+                <span>Backend Connected</span>
+              </span>
+            )}
+
             {user && (
               <div className="flex items-center space-x-3">
                 <div className="text-right">

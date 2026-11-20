@@ -29,8 +29,8 @@ class MemoryHeapVerificationTest {
             String flagKey = "flag-perf-" + i;
 
             List<Variation> variations = List.of(
-                    new Variation("v-off", "Off", false, "Off variation"),
-                    new Variation("v-on", "On", true, "On variation")
+                    new Variation("v-off", "Off", false),
+                    new Variation("v-on", "On", true)
             );
 
             // Construct 10-condition composite rule
@@ -47,14 +47,14 @@ class MemoryHeapVerificationTest {
             conditions.add(new LeafConditionNode("status", OperatorType.STARTS_WITH, List.of("active")));
 
             CompositeRuleNode ruleTree = new CompositeRuleNode(LogicalOperator.AND, conditions);
-            SegmentRule segmentRule = new SegmentRule("rule-1", "v-on", ruleTree);
+            SegmentRule segmentRule = new SegmentRule("rule-1", "rule-1", ruleTree, "v-on");
 
             FlagDefinition flag = new FlagDefinition(
                     flagKey, "Perf Flag " + i, "Stress test flag", FlagType.BOOLEAN, true,
                     variations,
-                    List.of(new TargetRule("v-on", List.of("vip-user-" + i))),
+                    List.of(new TargetRule("v-on", Set.of("vip-user-" + i))),
                     List.of(segmentRule),
-                    new PercentageRollout(List.of(new RolloutBucket("v-on", 50), new RolloutBucket("v-off", 50))),
+                    PercentageRollout.of(List.of(new RolloutBucket("v-on", 5000), new RolloutBucket("v-off", 5000))),
                     "v-on", "v-off", 1L, Instant.now(), List.of("perf", "stress")
             );
 
@@ -127,4 +127,3 @@ class MemoryHeapVerificationTest {
                 .isLessThanOrEqualTo(50.0);
     }
 }
-

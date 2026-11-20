@@ -16,71 +16,61 @@
       "name": "flagship.api-key",
       "type": "java.lang.String",
       "description": "Project environment SDK API key (e.g. flagship_dev_key_12345).",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": ""
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.cache-file-path",
       "type": "java.lang.String",
       "description": "Local disk cache file path for atomic snapshot persistence and offline recovery.",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": ".\/.flagship\/snapshot.json"
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.enabled",
       "type": "java.lang.Boolean",
       "description": "Master switch for FlagShip SDK integration.",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": true
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.event-batch-size",
       "type": "java.lang.Integer",
       "description": "Maximum number of events to batch before triggering an immediate flush.",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": 100
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.event-flush-interval-ms",
       "type": "java.lang.Long",
       "description": "Asynchronous exposure & goal event batch flush interval in milliseconds.",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": 10000
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.offline-mode",
       "type": "java.lang.Boolean",
       "description": "If true, runs entirely offline using local disk cache without contacting server.",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": false
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.polling-interval-ms",
       "type": "java.lang.Long",
       "description": "Polling fallback interval in milliseconds when SSE is unavailable or disconnected. Minimum 5000ms.",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": 30000
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.server-url",
       "type": "java.lang.String",
       "description": "FlagShip Control Plane Server URL (e.g. http:\/\/localhost:8080).",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": "http:\/\/localhost:8080"
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.sse-enabled",
       "type": "java.lang.Boolean",
       "description": "Enable real-time push synchronization via Server-Sent Events (SSE).",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": true
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "flagship.startup-timeout-ms",
       "type": "java.lang.Long",
       "description": "Startup bootstrap blocking timeout in milliseconds. Strictly capped at <= 2000 ms.",
-      "sourceType": "io.flagship.starter.config.FlagShipProperties",
-      "defaultValue": 1500
+      "sourceType": "io.flagship.starter.config.FlagShipProperties"
     },
     {
       "name": "management.endpoint.flagship.access",

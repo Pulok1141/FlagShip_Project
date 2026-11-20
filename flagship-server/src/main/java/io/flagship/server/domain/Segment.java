@@ -48,6 +48,19 @@ public class Segment {
         this.updatedAt = Instant.now();
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (id == null || id.isBlank()) {
+            id = "seg-" + java.util.UUID.randomUUID();
+        }
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        if (updatedAt == null) {
+            updatedAt = Instant.now();
+        }
+    }
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
